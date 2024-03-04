@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 import pandas as pd
+import os
 
 from urllib.parse import urljoin
 from selenium import webdriver
@@ -73,7 +74,7 @@ def save_link_to_product(driver, base_url):
         product_link = urljoin(base_url, relative_link)
         # Get product's title
         product_title = product.find("div", class_ = "product__name").find('h3').text
-    
+
         product_info.append([product_title, product_link])
 
     return product_info
@@ -83,15 +84,19 @@ if __name__=="__main__":
     base_url = r"https://cellphones.com.vn/"
     columns = ["Title", "Link"]
 
-    driver = init_driver(main_url)
+    driver = init_driver(main_url) # initialize the driver
 
-    while click_show_more(driver):
+    while click_show_more(driver): # continue clicking the show more button until there is no more content
         pass
 
-    product_info = save_link_to_product(driver, base_url)
+    product_info = save_link_to_product(driver, base_url) # save the product's link and title to a list
     df = pd.DataFrame(product_info, columns=columns)
-    df.to_csv("data/products_cellphones.csv", mode='a', encoding="utf-8") 
 
+    if not os.path.exists("data"): # create a folder to store the data
+        os.mkdir("data")
+    
+    df.to_csv("data/products_cellphones.csv", mode='w', encoding="utf-8") # save the data to a csv file
+    
     driver.quit()
 
     # fun fact: takes 50 times to click the show more button to reach the end :)
