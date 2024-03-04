@@ -1,8 +1,7 @@
 from bs4 import BeautifulSoup
-import requests
-import time
-import random
+import pandas as pd
 
+from urllib.parse import urljoin
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
@@ -12,10 +11,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 
-def gen_random_time():
-    return random.randint(0, 2)
-
-def init_driver():
+def init_driver(url):
     service = Service(executable_path="chromedriver.exe")
 
     options = webdriver.ChromeOptions()
@@ -43,40 +39,59 @@ def move_to_element(driver, element):
 
 def handle_popup(driver):
     try:
-        WebDriverWait(driver, 5).until(
+        WebDriverWait(driver, 3).until(
             EC.presence_of_element_located((By.CLASS_NAME, "cancel-button-top"))
         )
         click_button_by_class(driver, "cancel-button-top")
+        print("Popup handled")
     except:
-        print("No popup")
         return
 
 def click_show_more(driver):
     try:
-        WebDriverWait(driver, 10).until(
+        WebDriverWait(driver, 5).until(
             EC.presence_of_element_located((By.CLASS_NAME, "btn-show-more"))
         )
         click_button_by_class(driver, "btn-show-more")
         handle_popup(driver)
-        # time.sleep(gen_random_time())
+        
         move_to_element(driver, "btn-show-more")
-        handle_popup(driver)
-        # time.sleep(gen_random_time())   
+        handle_popup(driver)   
     except:
         print("No more content")
-        time.sleep(100)
         return False
     return True
 
+def save_link_to_product(driver, base_url):
+    html = driver.page_source
+    soup = BeautifulSoup(html, 'html.parser')
+    products = soup.find_all("div", class_ = "product-info", limit=None)
+    product_info = []
+    for product in products:
+        # Get product's link
+        relative_link = product.find("a", class_ = "product__link button__link").get("href")
+        product_link = urljoin(base_url, relative_link)
+        # Get product's title
+        product_title = product.find("div", class_ = "product__name").find('h3').text
+    
+        product_info.append([product_title, product_link])
+
+    return product_info
+
 if __name__=="__main__":
-    url = "https://cellphones.com.vn/mobile.html"
-    driver = init_driver()
-    # WebDriverWait(driver, 10).until(
-    #         EC.presence_of_element_located((By.CLASS_NAME, "btn-show-more"))
-    #     )
-    counter = 0
+    main_url = r"https://cellphones.com.vn/mobile.html"
+    base_url = r"https://cellphones.com.vn/"
+    columns = ["Title", "Link"]
+
+    driver = init_driver(main_url)
+
     while click_show_more(driver):
-        counter += 1
-        print(f"Number of clicks: {counter}")
-        pass     
+        pass
+
+    product_info = save_link_to_product(driver, base_url)
+    df = pd.DataFrame(product_info, columns=columns)
+    df.to_csv("data/products_cellphones.csv", mode='a', encoding="utf-8") 
+
     driver.quit()
+
+    # fun fact: takes 50 times to click the show more button to reach the end :)
