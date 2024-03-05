@@ -1,6 +1,8 @@
 from bs4 import BeautifulSoup
 import pandas as pd
 import os
+import time
+from datetime import datetime as dt
 
 from urllib.parse import urljoin
 from selenium import webdriver
@@ -47,6 +49,17 @@ def handle_popup(driver):
         print("Popup handled")
     except:
         return
+    
+def handle_popup_83(driver):
+    try:
+        WebDriverWait(driver, 3).until(
+            EC.presence_of_element_located((By.CLASS_NAME, "fancybox-close"))
+        )
+        click_button_by_class(driver, "fancybox-close")
+        print("Popup handled")
+    except:
+        return False
+    return True
 
 def click_show_more(driver):
     try:
@@ -97,6 +110,7 @@ if __name__=="__main__":
     
     df.to_csv("data/products_cellphones.csv", mode='w', encoding="utf-8") # save the data to a csv file
     
+    time.sleep(1000)
     driver.quit()
 
     # fun fact: takes 50 times to click the show more button to reach the end :)
