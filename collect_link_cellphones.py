@@ -1,18 +1,4 @@
-from bs4 import BeautifulSoup
-import pandas as pd
-import os
-import time
-from datetime import datetime as dt
-
-from urllib.parse import urljoin
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.action_chains import ActionChains
+from general_imports import *
 
 def init_driver(url):
     service = Service(executable_path="chromedriver.exe")
@@ -41,8 +27,10 @@ def move_to_element(driver, element):
     action.perform()
 
 def handle_popup(driver):
+    # cancel-button-top
+    # modal-close is-large
     try:
-        WebDriverWait(driver, 3).until(
+        WebDriverWait(driver, 5).until(
             EC.presence_of_element_located((By.CLASS_NAME, "cancel-button-top"))
         )
         click_button_by_class(driver, "cancel-button-top")
@@ -51,26 +39,27 @@ def handle_popup(driver):
         return
     
 def handle_popup_83(driver):
+    # cancel-button-top
+    # modal-close is-large
     try:
-        WebDriverWait(driver, 3).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "fancybox-close"))
+        element = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, '(//button[@aria-label="close"])[position()=2]'))
         )
-        click_button_by_class(driver, "fancybox-close")
-        print("Popup handled")
+        # Once the element is clickable, click on it
+        element.click()
+        print("Popup 83 handled")
     except:
         return False
     return True
 
 def click_show_more(driver):
     try:
-        WebDriverWait(driver, 5).until(
+        WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.CLASS_NAME, "btn-show-more"))
         )
         click_button_by_class(driver, "btn-show-more")
-        handle_popup(driver)
-        
         move_to_element(driver, "btn-show-more")
-        handle_popup(driver)   
+        handle_popup(driver)
     except:
         print("No more content")
         return False
@@ -91,26 +80,3 @@ def save_link_to_product(driver, base_url):
         product_info.append([product_title, product_link])
 
     return product_info
-
-if __name__=="__main__":
-    main_url = r"https://cellphones.com.vn/mobile.html"
-    base_url = r"https://cellphones.com.vn/"
-    columns = ["Title", "Link"]
-
-    driver = init_driver(main_url) # initialize the driver
-
-    while click_show_more(driver): # continue clicking the show more button until there is no more content
-        pass
-
-    product_info = save_link_to_product(driver, base_url) # save the product's link and title to a list
-    df = pd.DataFrame(product_info, columns=columns)
-
-    if not os.path.exists("data"): # create a folder to store the data
-        os.mkdir("data")
-    
-    df.to_csv("data/products_cellphones.csv", mode='w', encoding="utf-8") # save the data to a csv file
-    
-    time.sleep(1000)
-    driver.quit()
-
-    # fun fact: takes 50 times to click the show more button to reach the end :)
