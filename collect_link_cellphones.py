@@ -30,7 +30,7 @@ def handle_popup(driver):
     # cancel-button-top
     # modal-close is-large
     try:
-        WebDriverWait(driver, 10).until(
+        WebDriverWait(driver, 5).until(
             EC.presence_of_element_located((By.CLASS_NAME, "cancel-button-top"))
         )
         click_button_by_class(driver, "cancel-button-top")
@@ -58,13 +58,8 @@ def click_show_more(driver):
             EC.presence_of_element_located((By.CLASS_NAME, "btn-show-more"))
         )
         click_button_by_class(driver, "btn-show-more")
-        # handle_popup_83(driver)
-        handle_popup(driver)
-        # handle_popup(driver, "cancel-button-top")
-        
         move_to_element(driver, "btn-show-more")
-        handle_popup(driver) 
-        # handle_popup(driver, "cancel-button-top")
+        handle_popup(driver)
     except:
         print("No more content")
         return False

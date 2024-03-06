@@ -4,6 +4,8 @@ if __name__=="__main__":
     main_url = r"https://cellphones.com.vn/mobile.html"
     base_url = r"https://cellphones.com.vn/"
     columns = ["Title", "Link"]
+    current_day = dt.now().day
+    current_month = dt.now().month
 
     driver = init_driver(main_url) # initialize the driver
 
@@ -16,10 +18,11 @@ if __name__=="__main__":
     product_info = save_link_to_product(driver, base_url) # save the product's link and title to a list
     df = pd.DataFrame(product_info, columns=columns)
 
-    if not os.path.exists("data_test"): # create a folder to store the data
-        os.mkdir("data_test")
+    data_path = f"data/products_cellphones_{current_day}_{current_month}.csv"
     
-    df.to_csv("data_test/products_cellphones_5_3.csv", mode='w', encoding="utf-8") # save the data to a csv file
+    if not os.path.exists("data"): # create a folder to store the data
+        os.mkdir("data")
+    df.to_csv(data_path, mode='w', encoding="utf-8") # save the data to a csv file
     
     driver.quit()
 
