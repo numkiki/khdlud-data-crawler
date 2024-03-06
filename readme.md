@@ -10,5 +10,5 @@ pip install -r requirements.txt
 ## How to run the code:
 + Run the following command:
 ```
-python source.py
+python main.py
 ```
