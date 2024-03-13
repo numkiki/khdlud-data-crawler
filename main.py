@@ -3,7 +3,7 @@ from collect_link_cellphones import *
 if __name__=="__main__":
     main_url = r"https://cellphones.com.vn/mobile.html"
     base_url = r"https://cellphones.com.vn/"
-    columns = ["Title", "Link"]
+    columns = ["ID", "Title", "Link"]
     current_day = dt.now().day
     current_month = dt.now().month
 
