@@ -4,6 +4,8 @@ import numpy as np
 import os
 import time
 from datetime import datetime as dt
+import scrapy
+import requests
 
 from urllib.parse import urljoin
 from selenium import webdriver
