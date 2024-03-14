@@ -5,10 +5,15 @@ Before running the code, here are the pre-requisites:
 pip install -r requirements.txt
 ```
 + Make sure to have a stable internet connection.
-+ Make sure to store the **Chromedriver** in the same directory as the source code. We will change the structure of the repository after the code is stable.
++ Store the **Chromedriver** in the same directory as the source code. We will change the structure of the repository after the code is stable.
 
 ## How to run the code:
 + Run the following command:
 ```
 python main.py
 ```
+It will create a `data` folder containing the file with links to each product. 
+
+To perform crawling, inside the notebook, change the name of the `data/some-name.csv` and replace the `some-name` with the current file name.
+
+The execution time might be more than 2 hours. 
